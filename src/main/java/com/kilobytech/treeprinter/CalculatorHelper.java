@@ -6,12 +6,7 @@ package com.kilobytech.treeprinter;
  * @Description:
  * @date 2020/7/22
  */
-public enum CalculatorHelper {
-    SINGLETON;
-    public static CalculatorHelper getInstance() {
-        return SINGLETON;
-    }
-
+public class CalculatorHelper {
     /**
      * 判断两个平衡因子是否异号
      * @param bf1
@@ -41,8 +36,4 @@ public enum CalculatorHelper {
         return ((n ^ i) - i);
     }
 
-    public static void main(String[] args) {
-        boolean oppositeSign = isOppositeSign(21, -2);
-        System.out.println(oppositeSign);
-    }
 }

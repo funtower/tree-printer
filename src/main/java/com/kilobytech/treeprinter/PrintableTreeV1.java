@@ -2,20 +2,23 @@ package com.kilobytech.treeprinter;
 
 import com.kilobytech.treeprinter.BalanceBinarySearchTree.Node;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomUtils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.Collectors;
 
 /**
  * @author huangtao
- * @Title: BFSExt
+ * @Title: 可打印树
  * @Description:
  * @date 2020/7/25
  */
 @Slf4j
-public class BinaryTreePrintUtil2 {
+public class PrintableTreeV1 {
 
     private PrintableNode root;
 
@@ -33,16 +36,12 @@ public class BinaryTreePrintUtil2 {
 
     private int displayContentMaxLength;
 
-    private Map<Integer, Integer> depthNodeStartRowMapping;
-
     private static class PrintableNode {
         private PrintableNode parent;
         private PrintableNode left;
         private PrintableNode right;
         private String nilParent;
         private int data;
-
-        private int offset;
 
         private int printableNodeDepth;
 
@@ -72,13 +71,13 @@ public class BinaryTreePrintUtil2 {
             return null;
         }
         if (data < search.data) {
-//            System.err.println("节点[" + data + "] 比当前搜寻节点 [" + search.data + "] 小，继续往左搜寻");
+            System.err.println("节点[" + data + "] 比当前搜寻节点 [" + search.data + "] 小，继续往左搜寻");
             return search(data, search.left);
         } else if (data > search.data) {
-//            System.err.println("节点[" + data + "] 比当前搜寻节点 [" + search.data + "] 大，继续往右搜寻");
+            System.err.println("节点[" + data + "] 比当前搜寻节点 [" + search.data + "] 大，继续往右搜寻");
             return search(data, search.right);
         } else {
-//            System.err.println("节点[" + data + "] 等于当前搜寻节点 [" + search.data + "] 停止搜寻");
+            System.err.println("节点[" + data + "] 等于当前搜寻节点 [" + search.data + "] 停止搜寻");
             return search;
         }
     }
@@ -92,53 +91,40 @@ public class BinaryTreePrintUtil2 {
 
     private PrintableNode deepClone(Node bTreeRoot) {
         Queue<Node> access = new LinkedList();
-        PrintableNode pRoot = new PrintableNode(null, null, null, bTreeRoot.data, 1);
+        PrintableNode pRoot = new PrintableNode(null, null, null, bTreeRoot.getData(), 1);
         access.add(bTreeRoot);
 
         while (!access.isEmpty()) {
             Node node = access.poll();
-            PrintableNode pNode = search(node.data, pRoot);
+            PrintableNode pNode = search(node.getData(), pRoot);
             int depth = calculateDepth(pNode);
-            if (Objects.nonNull(node.left)) {
-                access.offer(node.left);
-                pNode.left = new PrintableNode(pNode, null, null, node.left.data, depth + 1);
-            } else if (depth < bTreeRoot.height) {
+            if (Objects.nonNull(node.getLeft())) {
+                access.offer(node.getLeft());
+                pNode.left = new PrintableNode(pNode, null, null, node.getLeft().getData(), depth + 1);
+            } else if (depth < bTreeRoot.getHeight()) {
                 pNode.left = new PrintableNode(pNode, null, null, Integer.MIN_VALUE, depth + 1, "NIL-" + pNode.data);
             }
-            if (Objects.nonNull(node.right)) {
-                access.offer(node.right);
-                pNode.right = new PrintableNode(pNode, null, null, node.right.data, depth + 1);
-            } else if (depth < bTreeRoot.height) {
+            if (Objects.nonNull(node.getRight())) {
+                access.offer(node.getRight());
+                pNode.right = new PrintableNode(pNode, null, null, node.getRight().getData(), depth + 1);
+            } else if (depth < bTreeRoot.getHeight()) {
                 pNode.right = new PrintableNode(pNode, null, null, Integer.MIN_VALUE, depth + 1, "NIL-" + pNode.data);
             }
         }
         return pRoot;
     }
 
-    public BinaryTreePrintUtil2(Node root) {
-        this.maxHeight = root.height;
+    public PrintableTreeV1(Node root) {
+        this.maxHeight = root.getHeight();
         PrintableNode pRoot = deepClone(root);
         fillWithNilNode(pRoot);
         this.root = pRoot;
         this.depth = 1;
-        this.depthNodeStartRowMapping = new HashMap<>();
         this.unitBlockLength = this.displayContentMaxLength + 2;// 加上两个左右挪动误差字符
         // containerWidth 代表打印容器的最大宽度，也就是最底层的元素个数 * 2 ^ (树高度 - 1)
         this.containerWidth = this.unitBlockLength << (this.maxHeight - 1);
-//        this.container = new char[2 * this.maxHeight - 1][this.containerWidth]; TODO 改造成多行连线的容器
-        this.depthNodeStartRowMapping.put(1, 1);
-        for (int i = 2; i <= this.maxHeight; i++) {
-            int lineRowGap = this.containerWidth / (1 << i) + 1;
-            this.depthNodeStartRowMapping.put(i, this.depthNodeStartRowMapping.get(i - 1) + lineRowGap + 1);
-        }
-        IntSummaryStatistics statistics = this.depthNodeStartRowMapping
-                .values()
-                .parallelStream()
-                .collect(Collectors.toList())
-                .stream()
-                .collect(Collectors.summarizingInt(e -> e));
-        int maxRow = statistics.getMax();
-        this.container = new char[maxRow][this.containerWidth];
+        this.container = new char[2 * this.maxHeight - 1][this.containerWidth];
+
         // 给字符数组初始化值
         for (int i = 0; i < this.container.length; i++) {
             for (int j = 0; j < this.container[i].length; j++) {
@@ -177,6 +163,18 @@ public class BinaryTreePrintUtil2 {
 //                System.out.print(container[i][j]);
 //            }
             System.out.println(new String(container[i]));
+//            try {
+//                Files.write(Paths.get("C:\\Users\\huangtao\\Desktop\\diirdir\\print.txt"),
+//                        new String(container[i]).getBytes(Charset.forName("UTF-8")),
+//                        StandardOpenOption.APPEND);
+//                Files.write(Paths.get("C:\\Users\\huangtao\\Desktop\\diirdir\\print.txt"),
+//                        "\r\n".getBytes(Charset.forName("UTF-8")),
+//                        StandardOpenOption.APPEND);
+//
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            System.out.println("\r\n\r\n");
         }
     }
 
@@ -201,26 +199,7 @@ public class BinaryTreePrintUtil2 {
                 this.depth++;
             }
             int currentOffset = calculateOffset();
-            System.arraycopy(unitBlock, 0, this.container[this.depthNodeStartRowMapping.get(this.depth) - 1], currentOffset, unitBlockLength);
-            // 保存当前节点的偏移量
-            poll.offset = currentOffset;
-            // 略过第一层上面的连线
-            if (this.depth != 1 && (this.depthNodeStartRowMapping.get(this.depth) - this.depthNodeStartRowMapping.get(this.depth - 1)) > 0) {
-                // 连线部分
-
-                int item = this.containerWidth / (1 << this.depth);
-                int startRow = this.depthNodeStartRowMapping.get(this.depth - 1);
-                for (int i = 0; i < item + 1; i++) {
-                    if (this.countPerLevel % 2 == 1) {
-                        this.container[startRow + i][poll.parent.offset + this.unitBlockLength / 2 - i] = '/';
-                    } else {
-                        this.container[startRow + i][poll.parent.offset + this.unitBlockLength / 2 + i] = '\\';
-                    }
-                }
-
-//                int lineLeftOffset = calculateLineLeftOffset(unitLine.length);
-//                System.arraycopy(unitLine, 0, this.container[2 * (this.depth - 1) - 1], lineLeftOffset, unitLine.length);
-            }
+            System.arraycopy(unitBlock, 0, this.container[2 * (this.depth - 1)], currentOffset, unitBlockLength);
             this.countPerLevel++;
             // 将其左、右子树都放入队列
             if (Objects.nonNull(poll.left)) {
@@ -271,18 +250,37 @@ public class BinaryTreePrintUtil2 {
         return unitBlock;
     }
 
-    public static void main(String[] args) throws IOException {
-        BalanceBinarySearchTree btree = new BalanceBinarySearchTree();
-//        for (int i = 0; i < 20; i++) {
-//            btree.insert(RandomUtils.nextInt(0, 1000));
-//        }
-//        btree.insert(19);
-        btree.insert(1);
-        btree.insert(3);
-        btree.insert(2);
+    private int calculateLineLeftOffset(int unitLineLength) {
+        // 最大
+        int currentLevelMaxNumerator = (1 << depth) + 1;
+        int numerator = 2 * countPerLevel + 1;
+        if (numerator > currentLevelMaxNumerator) {
+            throw new IllegalStateException("分子计算发生异常，预期应该不大于 " + currentLevelMaxNumerator + "，但结果等于 " + numerator);
+        }
+        int standardLeftOffset = this.containerWidth * numerator / (1 << depth + 1);
+        // 在标准左移基础上还要再减去单元块本身长度的二分之一
+        return Math.max(standardLeftOffset - unitLineLength / 2, 0);
+    }
 
-        BinaryTreePrintUtil2 print = new BinaryTreePrintUtil2(btree.root);
+    public char[] buildUnitLine(char lineCharacter) {
+        return new char[]{' ', lineCharacter, ' '};
+    }
+
+    public static void main(String[] args) throws IOException {
+//        int w = 1 << 1;
+//        log.info(w);
+
+        BalanceBinarySearchTree btree = new BalanceBinarySearchTree();
+        for (int i = 0; i < 20; i++) {
+            btree.insert(RandomUtils.nextInt(0, 1000));
+        }
+//        btree.insert(19);
+//        btree.insert(100);
+//        btree.insert(190);
+//        btree.insert(200);
+
+        PrintableTreeV1 print = new PrintableTreeV1(btree.getRoot());
         print.print();
-//        System.in.read();
+        System.in.read();
     }
 }
