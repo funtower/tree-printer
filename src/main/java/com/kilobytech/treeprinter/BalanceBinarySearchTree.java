@@ -74,7 +74,7 @@ public class BalanceBinarySearchTree {
 
         @Override
         public Node getLeft() {
-            return left;
+            return this.left;
         }
 
         public void setLeft(Node left) {
@@ -83,7 +83,7 @@ public class BalanceBinarySearchTree {
 
         @Override
         public Node getRight() {
-            return right;
+            return this.right;
         }
 
         public void setRight(Node right) {
@@ -100,7 +100,12 @@ public class BalanceBinarySearchTree {
 
         @Override
         public String toString() {
-            return "[" + data + "]";
+            return "[" + this.data + "]";
+        }
+
+        @Override
+        public int compareTo(Integer o) {
+            return this.data - o.intValue();
         }
     }
 

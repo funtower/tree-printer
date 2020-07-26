@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * @date 2020/7/25
  */
 @Slf4j
-public class PrintableTreeV2 {
+public class PrintableTreeV2<E extends Comparable> {
 
     // 树的根节点
     private PrintableNode root;
@@ -79,7 +79,7 @@ public class PrintableTreeV2 {
     /**
      * 打印节点
      */
-    private static class PrintableNode {
+    private static class PrintableNode<T extends Comparable> implements INode<T> {
         // 父节点
         private PrintableNode parent;
         // 左子节点
@@ -92,13 +92,13 @@ public class PrintableTreeV2 {
          */
         private String nilParent;
         // 节点数据
-        private final int data;
+        private final T data;
         // 节点的偏移量
         private int offset;
         // 打印节点的深度
         private final int printableNodeDepth;
 
-        public PrintableNode(PrintableNode parent, PrintableNode left, PrintableNode right, int data, int printableNodeDepth) {
+        public PrintableNode(PrintableNode parent, PrintableNode left, PrintableNode right, T data, int printableNodeDepth) {
             this.parent = parent;
             this.left = left;
             this.right = right;
@@ -106,7 +106,7 @@ public class PrintableTreeV2 {
             this.printableNodeDepth = printableNodeDepth;
         }
 
-        public PrintableNode(PrintableNode parent, PrintableNode left, PrintableNode right, int data, int printableNodeDepth, String nilParent) {
+        public PrintableNode(PrintableNode parent, PrintableNode left, PrintableNode right, T data, int printableNodeDepth, String nilParent) {
             this(parent, left, right, data, printableNodeDepth);
             this.nilParent = nilParent;
         }
@@ -117,8 +117,33 @@ public class PrintableTreeV2 {
          */
         @Override
         public String toString() {
-            String print = data == Integer.MIN_VALUE ? nilParent : String.valueOf(data);
+            String print = Objects.isNull(data) ? nilParent : String.valueOf(data);
             return "[" + print + "]";
+        }
+
+        @Override
+        public T getData() {
+            return this.data;
+        }
+
+        @Override
+        public INode<T> getParent() {
+            return this.parent;
+        }
+
+        @Override
+        public INode<T> getLeft() {
+            return this.left;
+        }
+
+        @Override
+        public INode<T> getRight() {
+            return this.right;
+        }
+
+        @Override
+        public int compareTo(T o) {
+            return this.data.compareTo(o);
         }
     }
 
@@ -128,33 +153,21 @@ public class PrintableTreeV2 {
      * @param search
      * @return
      */
-    public PrintableNode search(int data, PrintableNode search) {
+    public PrintableNode search(E data, PrintableNode<E> search) {
         if (Objects.isNull(search)) {
             log.info("未找到节点 [" + data + "]");
             return null;
         }
-        if (data < search.data) {
-            log.info("节点[" + data + "] 比当前搜寻节点 [" + search.data + "] 小，继续往左搜寻");
+        if (data.compareTo(search.getData()) < 0) {
+            log.info("节点[" + data + "] 比当前搜寻节点 [" + search.getData() + "] 小，继续往左搜寻");
             return search(data, search.left);
-        } else if (data > search.data) {
-            log.info("节点[" + data + "] 比当前搜寻节点 [" + search.data + "] 大，继续往右搜寻");
+        } else if (data.compareTo(search.getData()) > 0) {
+            log.info("节点[" + data + "] 比当前搜寻节点 [" + search.getData() + "] 大，继续往右搜寻");
             return search(data, search.right);
         } else {
-            log.info("节点[" + data + "] 等于当前搜寻节点 [" + search.data + "] 停止搜寻");
+            log.info("节点[" + data + "] 等于当前搜寻节点 [" + search.getData() + "] 停止搜寻");
             return search;
         }
-    }
-
-    /**
-     * 从本节点开始向上递归计算深度
-     * @param node
-     * @return
-     */
-    private int calculateDepth(PrintableNode node) {
-        if (node.parent == null) {
-            return 1;
-        }
-        return calculateDepth(node.parent) + 1;
     }
 
     /**
@@ -200,9 +213,9 @@ public class PrintableTreeV2 {
             // 若队列不为空，则出队该元素进行处理，并将其子节点入队
             Node node = access.poll();
             // 根据源树节点数据到拷贝树里进行搜索对应位置的节点
-            PrintableNode pNode = search(node.getData(), pRoot);
+            PrintableNode pNode = search((E) node.getData(), pRoot);
             // 因为平衡二叉搜索树没有保存深度属性，所以我们可以通过向上递归搜索的方式计算出来该节点的深度信息
-            int depth = calculateDepth(pNode);
+            int depth = pNode.calculateDepth();
             // 若节点的子节点为空则创建一个虚拟子节点，并设置该子节点的深度为当前节点深度+1，然后将其挂载到当前节点上，
             // 若不为空则复制节点数据并同样设置子节点深度为当前深度+1，然后将其挂载到当前节点上
             if (Objects.nonNull(node.getLeft())) {
@@ -210,14 +223,14 @@ public class PrintableTreeV2 {
                 access.offer(node.getLeft());
                 pNode.left = new PrintableNode(pNode, null, null, node.getLeft().getData(), depth + 1);
             } else if (depth < bTreeRoot.getHeight()) {
-                pNode.left = new PrintableNode(pNode, null, null, Integer.MIN_VALUE, depth + 1, "L-NIL-" + pNode.data);
+                pNode.left = new PrintableNode(pNode, null, null, null, depth + 1, "L-NIL-" + pNode.getData());
             }
             if (Objects.nonNull(node.getRight())) {
                 // 右子节点入队
                 access.offer(node.getRight());
                 pNode.right = new PrintableNode(pNode, null, null, node.getRight().getData(), depth + 1);
             } else if (depth < bTreeRoot.getHeight()) {
-                pNode.right = new PrintableNode(pNode, null, null, Integer.MIN_VALUE, depth + 1, "R-NIL-" + pNode.data);
+                pNode.right = new PrintableNode(pNode, null, null, null, depth + 1, "R-NIL-" + pNode.getData());
             }
         }
         return pRoot;
@@ -238,12 +251,12 @@ public class PrintableTreeV2 {
             if (poll.printableNodeDepth < this.maxHeight) {
                 // 若该节点的深度小于最大的深度也就是整棵树的高度，并且子节点为空，就创建虚拟子节点并挂载到这个节点上
                 if (Objects.isNull(poll.left)) {
-                    poll.left = new PrintableNode(poll, null, null, Integer.MIN_VALUE, poll.printableNodeDepth + 1, poll.nilParent.replaceAll("NIL", "L-NIL"));
+                    poll.left = new PrintableNode(poll, null, null, null, poll.printableNodeDepth + 1, poll.nilParent.replaceAll("NIL", "L-NIL"));
                 }
                 // 左子节点入队
                 access.offer(poll.left);
                 if (Objects.isNull(poll.right)) {
-                    poll.right = new PrintableNode(poll, null, null, Integer.MIN_VALUE, poll.printableNodeDepth + 1, poll.nilParent.replaceAll("NIL", "R-NIL"));
+                    poll.right = new PrintableNode(poll, null, null, null, poll.printableNodeDepth + 1, poll.nilParent.replaceAll("NIL", "R-NIL"));
                 }
                 // 右子节点入队
                 access.offer(poll.right);
