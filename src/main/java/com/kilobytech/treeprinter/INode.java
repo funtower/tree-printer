@@ -8,7 +8,7 @@ import java.util.Comparator;
  * @Description:
  * @date 2020/7/26
  */
-public interface INode<T> extends Comparable<T> {
+public interface INode<T extends Comparable> {
 
     T getData();
 
@@ -28,4 +28,5 @@ public interface INode<T> extends Comparable<T> {
         }
         return getParent().calculateDepth() + 1;
     }
+
 }

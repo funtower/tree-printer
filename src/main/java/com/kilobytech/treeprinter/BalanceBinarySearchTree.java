@@ -2,10 +2,7 @@ package com.kilobytech.treeprinter;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @author huangtao
@@ -14,10 +11,7 @@ import java.util.stream.Collectors;
  * @date 2020/7/22
  */
 @Slf4j
-public class BalanceBinarySearchTree {
-
-    // 单纯为了打印方便存的集合，跟数据结构本身没关系
-    private List<Node> all = new ArrayList<>();
+public class BalanceBinarySearchTree<E extends Comparable> {
 
     private enum RotateType {
         L, // 当前节点单次左旋
@@ -35,9 +29,9 @@ public class BalanceBinarySearchTree {
         ;
     }
 
-    public class Node implements INode<Integer> {
+    public class Node implements INode<E> {
         // 数据
-        private int data;
+        private E data;
         // 父节点
         private Node parent;
         // 左子节点
@@ -49,17 +43,17 @@ public class BalanceBinarySearchTree {
         // 高度
         private int height;
 
-        public Node(int data) {
+        public Node(E data) {
             this.data = data;
             this.height = 1;
         }
 
         @Override
-        public Integer getData() {
+        public E getData() {
             return data;
         }
 
-        public void setData(int data) {
+        public void setData(E data) {
             this.data = data;
         }
 
@@ -68,26 +62,14 @@ public class BalanceBinarySearchTree {
             return parent;
         }
 
-        public void setParent(Node parent) {
-            this.parent = parent;
-        }
-
         @Override
         public Node getLeft() {
             return this.left;
         }
 
-        public void setLeft(Node left) {
-            this.left = left;
-        }
-
         @Override
         public Node getRight() {
             return this.right;
-        }
-
-        public void setRight(Node right) {
-            this.right = right;
         }
 
         public int getBalanceFactor() {
@@ -103,10 +85,6 @@ public class BalanceBinarySearchTree {
             return "[" + this.data + "]";
         }
 
-        @Override
-        public int compareTo(Integer o) {
-            return this.data - o.intValue();
-        }
     }
 
     // 树的根节点
@@ -114,10 +92,6 @@ public class BalanceBinarySearchTree {
 
     // 数据节点个数
     private int size;
-
-    public List<Node> getAll() {
-        return all;
-    }
 
     public Node getRoot() {
         return root;
@@ -132,14 +106,15 @@ public class BalanceBinarySearchTree {
      * @param data
      * @return
      */
-    public boolean delete(int data) {
+    public boolean delete(E data) {
         Node delete = search(data, root);
         if (Objects.isNull(delete)) {
             return false;
         }
         Node reBalanceStart = searchAndUnmount(delete);
-        reBalance(reBalanceStart);
-        all = all.stream().filter(e -> e.data != data).collect(Collectors.toList());
+        if (Objects.nonNull(reBalanceStart)) {
+            reBalance(reBalanceStart);
+        }
         size--;
         return true;
     }
@@ -208,10 +183,13 @@ public class BalanceBinarySearchTree {
      * @param newDelete
      */
     private void swapValue(Node delete, Node newDelete) {
-        delete.data = delete.data ^ newDelete.data;
-        newDelete.data = delete.data ^ newDelete.data;
-        delete.data = delete.data ^ newDelete.data;
-
+        Comparable tmp = delete.getData();
+        delete.setData(newDelete.getData());
+        // 小知识点：
+        // 问：为啥设置了泛型还要强转？
+        // 答：因为 Node getData 出来的东西一定是泛型 E 类型的，
+        // 所以强制约定你必须能够强转成E的才允许你往里放
+        newDelete.setData((E) tmp);
     }
 
     /**
@@ -234,10 +212,14 @@ public class BalanceBinarySearchTree {
      * @param grandchild
      */
     private void connectParentWithGrandchild(Node delete, Node parent, Node grandchild) {
-        if (parent.left == delete) {
-            parent.left = grandchild;
+        if (Objects.nonNull(parent)) {
+            if (parent.left == delete) {
+                parent.left = grandchild;
+            } else {
+                parent.right = grandchild;
+            }
         } else {
-            parent.right = grandchild;
+            this.root = grandchild;
         }
         grandchild.parent = parent;
     }
@@ -265,19 +247,19 @@ public class BalanceBinarySearchTree {
      * @param search
      * @return
      */
-    public Node search(int data, Node search) {
+    public Node search(E data, Node search) {
         if (Objects.isNull(search)) {
             log.warn("未找到节点 [" + data + "]");
             return null;
         }
-        if (data < search.data) {
-            log.info("节点[" + data + "] 比当前搜寻节点 [" + search.data + "] 小，继续往左搜寻");
-            return search(data, search.left);
-        } else if (data > search.data) {
-            log.info("节点[" + data + "] 比当前搜寻节点 [" + search.data + "] 大，继续往右搜寻");
-            return search(data, search.right);
+        if (data.compareTo(search.getData()) < 0) {
+            log.info("节点[" + data + "] 比当前搜寻节点 [" + search.getData() + "] 小，继续往左搜寻");
+            return search(data, search.getLeft());
+        } else if (data.compareTo(search.getData()) > 0) {
+            log.info("节点[" + data + "] 比当前搜寻节点 [" + search.getData() + "] 大，继续往右搜寻");
+            return search(data, search.getRight());
         }
-        log.info("节点[" + data + "] 等于当前搜寻节点 [" + search.data + "] 停止搜寻");
+        log.info("节点[" + data + "] 等于当前搜寻节点 [" + search.getData() + "] 停止搜寻");
         return search;
     }
 
@@ -287,10 +269,10 @@ public class BalanceBinarySearchTree {
      * @return
      */
     public Node search4Maximum(Node start) {
-        if (Objects.isNull(start.right)) {
+        if (Objects.isNull(start.getRight())) {
             return start;
         }
-        return search4Maximum(start.right);
+        return search4Maximum(start.getRight());
     }
 
     /**
@@ -299,10 +281,10 @@ public class BalanceBinarySearchTree {
      * @return
      */
     public Node search4Minimum(Node start) {
-        if (Objects.isNull(start.left)) {
+        if (Objects.isNull(start.getLeft())) {
             return start;
         }
-        return search4Minimum(start.left);
+        return search4Minimum(start.getLeft());
     }
 
     /**
@@ -310,18 +292,17 @@ public class BalanceBinarySearchTree {
      * @param data
      * @return
      */
-    public boolean insert(int data) {
-        List<Node> exists = all.parallelStream().filter(e -> e.data == data).collect(Collectors.toList());
-        if (exists.size() > 0) {
+    public boolean insert(E data) {
+        Node result = search(data, this.root);
+        if (Objects.nonNull(result)) {
             log.warn("节点 [" + data + "] 已存在，换个数字好吗 (^_^)!");
             return false;
         }
         Node newNode = new Node(data);
 
-        // 埋点
-        all.add(newNode);
-        if (Objects.isNull(root)) {
-            root = newNode;
+        if (Objects.isNull(this.root)) {
+            this.root = newNode;
+            size++;
             return true;
         }
         // 搜索并将新节点挂载
@@ -352,27 +333,29 @@ public class BalanceBinarySearchTree {
      */
     private void rotate2Balance(Node rotate) {
         log.info("节点 [" + rotate.data + "] recalculate BF: " + rotate.balanceFactor + " recalculate HG: " + rotate.height);
-        if (CalculatorHelper.abs(rotate.balanceFactor) > 1) {
-            log.info("节点 [" + rotate.data + "] 重新计算平衡因子后依然不平衡，开始旋转");
-            RotateType rotateType = rotateType(rotate);
-            switch (rotateType) {
-                case R:
-                    rightRotate(rotate);
-                    break;
-                case L:
-                    leftRotate(rotate);
-                    break;
-                case CLR:
-                    leftRotate(rotate.left);
-                    rightRotate(rotate);
-                    break;
-                case CRL:
-                    rightRotate(rotate.right);
-                    leftRotate(rotate);
-                    break;
-                default:
-                    break;
-            }
+        if (CalculatorHelper.abs(rotate.balanceFactor) < 2) {
+            log.info("节点 [" + rotate.data + "] 已平衡，无需旋转");
+            return;
+        }
+        log.info("节点 [" + rotate.data + "] 不平衡，开始旋转");
+        RotateType rotateType = rotateType(rotate);
+        switch (rotateType) {
+            case R:
+                rightRotate(rotate);
+                break;
+            case L:
+                leftRotate(rotate);
+                break;
+            case CLR:
+                leftRotate(rotate.left);
+                rightRotate(rotate);
+                break;
+            case CRL:
+                rightRotate(rotate.right);
+                leftRotate(rotate);
+                break;
+            default:
+                break;
         }
     }
 
@@ -504,8 +487,8 @@ public class BalanceBinarySearchTree {
      * @return
      */
     private int calculateHeight(Node node) {
-        int hL = Objects.isNull(node.left) ? 0 : node.left.height;
-        int hR = Objects.isNull(node.right) ? 0 : node.right.height;
+        int hL = Objects.isNull(node.getLeft()) ? 0 : node.getLeft().getHeight();
+        int hR = Objects.isNull(node.getRight()) ? 0 : node.getRight().getHeight();
         return Integer.max(hL, hR) + 1;
     }
 
@@ -515,7 +498,7 @@ public class BalanceBinarySearchTree {
      * @param mount
      */
     private void add(Node newNode, Node mount) {
-        if (newNode.data > mount.data) {
+        if (newNode.data.compareTo(mount.data) > 0) {
             mount.right = newNode;
         } else {
             mount.left = newNode;
@@ -532,7 +515,7 @@ public class BalanceBinarySearchTree {
     public Node searchAndMount(Node newNode, Node mount) {
         // 如果新节点比当前搜寻的节点小，那么将当前搜寻节点的右节点赋给下一搜寻节点，
         // 如果新节点比当前搜寻的节点大（或者相等）,那么将当前搜寻节点的左节点赋给下一搜寻节点
-        boolean smaller = newNode.data < mount.data;
+        boolean smaller = newNode.data.compareTo(mount.data) < 0;
         Node next = smaller ? mount.left : mount.right;
         // 如果下一搜寻节点为空，则代表搜寻到边际节点了
         if (Objects.isNull(next)) {

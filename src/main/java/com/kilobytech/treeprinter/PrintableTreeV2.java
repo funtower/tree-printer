@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * @date 2020/7/25
  */
 @Slf4j
-public class PrintableTreeV2<E extends Comparable> {
+public class PrintableTreeV2<T extends Comparable> {
 
     // 树的根节点
     private PrintableNode root;
@@ -79,7 +79,7 @@ public class PrintableTreeV2<E extends Comparable> {
     /**
      * 打印节点
      */
-    private static class PrintableNode<T extends Comparable> implements INode<T> {
+    private class PrintableNode implements INode<T> {
         // 父节点
         private PrintableNode parent;
         // 左子节点
@@ -141,10 +141,6 @@ public class PrintableTreeV2<E extends Comparable> {
             return this.right;
         }
 
-        @Override
-        public int compareTo(T o) {
-            return this.data.compareTo(o);
-        }
     }
 
     /**
@@ -153,7 +149,7 @@ public class PrintableTreeV2<E extends Comparable> {
      * @param search
      * @return
      */
-    public PrintableNode search(E data, PrintableNode<E> search) {
+    public <T extends Comparable> PrintableNode search(T data, PrintableNode search) {
         if (Objects.isNull(search)) {
             log.info("未找到节点 [" + data + "]");
             return null;
@@ -206,14 +202,14 @@ public class PrintableTreeV2<E extends Comparable> {
         // 队列先进先出
         Queue<Node> access = new LinkedList();
         // 根据给定的源树根节点复制一个可打印树的根节点
-        PrintableNode pRoot = new PrintableNode(null, null, null, bTreeRoot.getData(), 1);
+        PrintableNode pRoot = new PrintableNode(null, null, null, (T) bTreeRoot.getData(), 1);
         // 将根节点入队
         access.add(bTreeRoot);
         while (!access.isEmpty()) {
             // 若队列不为空，则出队该元素进行处理，并将其子节点入队
             Node node = access.poll();
             // 根据源树节点数据到拷贝树里进行搜索对应位置的节点
-            PrintableNode pNode = search((E) node.getData(), pRoot);
+            PrintableNode pNode = search(node.getData(), pRoot);
             // 因为平衡二叉搜索树没有保存深度属性，所以我们可以通过向上递归搜索的方式计算出来该节点的深度信息
             int depth = pNode.calculateDepth();
             // 若节点的子节点为空则创建一个虚拟子节点，并设置该子节点的深度为当前节点深度+1，然后将其挂载到当前节点上，
@@ -221,14 +217,14 @@ public class PrintableTreeV2<E extends Comparable> {
             if (Objects.nonNull(node.getLeft())) {
                 // 左子节点入队
                 access.offer(node.getLeft());
-                pNode.left = new PrintableNode(pNode, null, null, node.getLeft().getData(), depth + 1);
+                pNode.left = new PrintableNode(pNode, null, null, (T) node.getLeft().getData(), depth + 1);
             } else if (depth < bTreeRoot.getHeight()) {
                 pNode.left = new PrintableNode(pNode, null, null, null, depth + 1, "L-NIL-" + pNode.getData());
             }
             if (Objects.nonNull(node.getRight())) {
                 // 右子节点入队
                 access.offer(node.getRight());
-                pNode.right = new PrintableNode(pNode, null, null, node.getRight().getData(), depth + 1);
+                pNode.right = new PrintableNode(pNode, null, null, (T) node.getRight().getData(), depth + 1);
             } else if (depth < bTreeRoot.getHeight()) {
                 pNode.right = new PrintableNode(pNode, null, null, null, depth + 1, "R-NIL-" + pNode.getData());
             }
@@ -283,6 +279,9 @@ public class PrintableTreeV2<E extends Comparable> {
     }
 
     public PrintableTreeV2(Node root) {
+        if (Objects.isNull(root)) {
+            return;
+        }
         // 源树和可打印树的高度保持一致
         this.maxHeight = root.getHeight();
         // 将源树复制一份变成可打印树
@@ -492,6 +491,10 @@ public class PrintableTreeV2<E extends Comparable> {
     }
 
     public void print() {
+        if (Objects.isNull(this.root)) {
+            log.info("节点为空[NULL]");
+            return;
+        }
         buildPrintContainer();
         for (int i = 0; i < container.length; i++) {
 //            挨个儿打印容器元素即可

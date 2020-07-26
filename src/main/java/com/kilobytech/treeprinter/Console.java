@@ -1,7 +1,9 @@
 package com.kilobytech.treeprinter;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+import sun.plugin2.message.ShowDocumentMessage;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -17,7 +19,7 @@ import java.util.Scanner;
 public class Console {
 
     public static void main(String[] args) {
-        BalanceBinarySearchTree bbst = new BalanceBinarySearchTree();
+        BalanceBinarySearchTree<Integer> bbst = new BalanceBinarySearchTree();
         Scanner scanner = new Scanner(System.in);
         while (true) {
             try {
@@ -29,15 +31,6 @@ public class Console {
                 } else if (StringUtils.isEmpty(line.trim())) {
                     // 输入空则不处理
                     continue;
-                } else if (line.startsWith("look")) {
-                    if (line.length() == "look".length()) {
-                        bbst.getAll().forEach(e -> log.info("节点数据：[" + e.getData() + "] BF: " + e.getBalanceFactor() + " HG: " + e.getHeight()));
-                    } else {
-                        line = line.trim();
-                        int look = Integer.parseInt(line.substring("look ".length()));
-                        BalanceBinarySearchTree.Node lk = bbst.search(look, bbst.getRoot());
-                        bbst.getAll().parallelStream().filter(e -> e == lk).forEach(e -> log.info("节点数据：[" + e.getData() + "] BF: " + e.getBalanceFactor() + " HG: " + e.getHeight()));
-                    }
                 } else if (line.startsWith("show")) {
                     line = line.trim();
                     if (line.length() == "show".length()) {
@@ -55,7 +48,7 @@ public class Console {
                     line = line.trim();
                     int batchAdd = Integer.parseInt(line.substring("batch ".length()));
                     for (int i = 0; i < batchAdd; i++) {
-                        while (!bbst.insert(RandomUtil.getRandomIntInRange(0, 100))) ;
+                        while (!bbst.insert(RandomUtil.getRandomIntInRange(0, 10240))) ;
                     }
                 } else if (line.startsWith("search")) {
                     line = line.trim();
@@ -65,15 +58,64 @@ public class Console {
                     line = line.trim();
                     int delete = Integer.parseInt(line.substring("delete ".length()));
                     bbst.delete(delete);
+                } else if (line.startsWith("clean")) {
+                    line = line.trim();
+                    int clean = Integer.parseInt(line.substring("clean ".length()));
+                    for (int i = 0; i < clean; i++) {
+                        boolean delete = bbst.delete(RandomUtils.nextInt(0, 102400));
+                        if (!delete) {
+                            i--;
+                        }
+                    }
+                    System.out.println("已成功删除 " + clean + "个元素");
                 } else if ("reset".equalsIgnoreCase(line.trim())) {
                     bbst = new BalanceBinarySearchTree();
+                } else if ("size".equalsIgnoreCase(line.trim())) {
+                    int size = bbst.getSize();
+                    System.out.println("当前 size: " + size);
+                } else if (line.startsWith("test")) {
+                    line = line.trim();
+                    if (line.length() == "test".length()) {
+                        for (int i = 0; i < 100; i++) {
+                            boolean insert = bbst.insert(RandomUtils.nextInt(0, 100));
+                            if (!insert) {
+                                i--;
+                            }
+                        }
+                        while (Objects.nonNull(bbst.getRoot())) {
+                            int d = RandomUtils.nextInt(0, 100);
+                            boolean delete = bbst.delete(d);
+                            if (delete) {
+                                log.error("已删除：[" + d + "]");
+                            }
+                        }
+                        log.info("删干净了");
+                    } else {
+                        int test = Integer.parseInt(line.substring("test ".length()));
+                        for (int i = 0; i < test; i++) {
+                            boolean insert = bbst.insert(RandomUtils.nextInt(0, test));
+                            if (!insert) {
+                                i--;
+                            }
+                        }
+                        while (Objects.nonNull(bbst.getRoot())) {
+                            int d = RandomUtils.nextInt(0, test);
+                            boolean delete = bbst.delete(d);
+                            if (delete) {
+                                log.error("已删除：[" + d + "]");
+                            }
+                        }
+                        log.info("删干净了");
+                        System.out.println("根------" + bbst.getRoot());
+                        System.out.println("容量----" + bbst.getSize());
+                    }
                 } else {
                     final BalanceBinarySearchTree ft = bbst;
                     Arrays.stream(line.trim().split(",")).mapToInt(Integer::parseInt).forEach(e -> ft.insert(e));
                     System.out.println("root = [" + bbst.getRoot().getData() + "]节点的平衡因子：" + bbst.getRoot().getBalanceFactor());
                     System.out.println("root = [" + bbst.getRoot().getData() + "]节点的高度：" + bbst.getRoot().getHeight());
                 }
-            } catch (Exception e) {
+            } catch (NumberFormatException e) {
                 log.error(e.getMessage());
                 continue;
             }

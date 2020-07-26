@@ -36,4 +36,13 @@ public class CalculatorHelper {
         return ((n ^ i) - i);
     }
 
+    /**
+     * 交换两值
+     */
+//    private void swapValue(int a, int b) {
+//        a = a ^ b;
+//        b = a ^ b;
+//        a = a ^ b;
+//    }
+
 }
