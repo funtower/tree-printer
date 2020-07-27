@@ -492,7 +492,7 @@ public class PrintableTreeV2<T extends Comparable> {
 
     public void print() {
         if (Objects.isNull(this.root)) {
-            log.info("节点为空[NULL]");
+            log.error("节点为空[NULL]");
             return;
         }
         buildPrintContainer();
@@ -502,7 +502,7 @@ public class PrintableTreeV2<T extends Comparable> {
 //                System.out.print(container[i][j]);
 //            }
             // 当然也可以直接将整行字符数组创建成一个字符串来打印
-            System.out.println(new String(container[i]));
+            log.error(new String(container[i]));
         }
     }
 

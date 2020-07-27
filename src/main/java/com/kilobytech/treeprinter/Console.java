@@ -3,7 +3,6 @@ package com.kilobytech.treeprinter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
-import sun.plugin2.message.ShowDocumentMessage;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -102,18 +101,18 @@ public class Console {
                             int d = RandomUtils.nextInt(0, test);
                             boolean delete = bbst.delete(d);
                             if (delete) {
-                                log.error("已删除：[" + d + "]");
+                                log.info("已删除：[" + d + "]");
                             }
                         }
                         log.info("删干净了");
-                        System.out.println("根------" + bbst.getRoot());
-                        System.out.println("容量----" + bbst.getSize());
+                        log.error("根------" + bbst.getRoot());
+                        log.error("容量----" + bbst.getSize());
                     }
                 } else {
                     final BalanceBinarySearchTree ft = bbst;
                     Arrays.stream(line.trim().split(",")).mapToInt(Integer::parseInt).forEach(e -> ft.insert(e));
-                    System.out.println("root = [" + bbst.getRoot().getData() + "]节点的平衡因子：" + bbst.getRoot().getBalanceFactor());
-                    System.out.println("root = [" + bbst.getRoot().getData() + "]节点的高度：" + bbst.getRoot().getHeight());
+                    log.error("root = [" + bbst.getRoot().getData() + "]节点的平衡因子：" + bbst.getRoot().getBalanceFactor());
+                    log.error("root = [" + bbst.getRoot().getData() + "]节点的高度：" + bbst.getRoot().getHeight());
                 }
             } catch (NumberFormatException e) {
                 log.error(e.getMessage());
