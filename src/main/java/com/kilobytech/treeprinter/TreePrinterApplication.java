@@ -96,6 +96,7 @@ public class TreePrinterApplication {
                         }
                         bbst.insert(i);
                     }
+                    log.error("当前size: " + bbst.getSize());
                     log.error("耗时：{} 秒", Duration.between(start, LocalDateTime.now()).getSeconds());
                     log.error("批量顺序插入完毕");
                 } else if (line.startsWith("desc batch")) {
