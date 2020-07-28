@@ -6,9 +6,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Scanner;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @SpringBootApplication
 @Slf4j
@@ -26,8 +26,8 @@ public class TreePrinterApplication {
             try {
 
                 String line = scanner.nextLine();
-                if ("-1".equals(line)) {
-                    // 输入 -1 就是结束进程
+                if ("exit".equals(line)) {
+                    // 输入 exit 就是结束进程
                     break;
                 } else if (StringUtils.isEmpty(line.trim())) {
                     // 输入空则不处理
@@ -45,12 +45,58 @@ public class TreePrinterApplication {
                             log.info("节点[" + show + "]不存在，show 啥啊？");
                         }
                     }
+                } else if (line.startsWith("look")) {
+                    line = line.trim();
+                    BalanceBinarySearchTree<Integer>.Node root = bbst.getRoot();
+                    if (Objects.isNull(root)) {
+                        log.error("根节点为空");
+                        continue;
+                    }
+                    if (line.length() == "look".length()) {
+                        // 层序遍历挨个儿 look
+                        Queue<BalanceBinarySearchTree.Node> access = new LinkedList<>();
+                        access.offer(root);
+                        while (!access.isEmpty()) {
+                            BalanceBinarySearchTree.Node node = access.poll();
+                            PrintableTreeV2<Integer> pt = new PrintableTreeV2<>(bbst.getRoot());
+                            PrintableTreeV2<Integer>.PrintableNode lkPNode = pt.search(node.getData(), pt.getRoot());
+                            log.error("节点[{}] 高度：{}，深度：{}，平衡因子：{}，水平偏移：{}，垂直偏移：{}",
+                                    node.getData(), node.getHeight(), node.calculateDepth(), node.getBalanceFactor(),
+                                    lkPNode.getHorizontalOffsetPercent(), lkPNode.getVerticalOffsetPercent());
+                            BalanceBinarySearchTree.Node left = node.getLeft();
+                            BalanceBinarySearchTree.Node right = node.getRight();
+                            if (Objects.nonNull(left)) {
+                                access.offer(left);
+                            }
+                            if (Objects.nonNull(right)) {
+                                access.offer(right);
+                            }
+                        }
+                    } else {
+                        int look = Integer.parseInt(line.substring("look ".length()));
+                        BalanceBinarySearchTree.Node node = bbst.search(look, bbst.getRoot());
+                        PrintableTreeV2<Integer> pt = new PrintableTreeV2<>(bbst.getRoot());
+                        PrintableTreeV2<Integer>.PrintableNode lkPNode = pt.search(look, pt.getRoot());
+                        if (Objects.nonNull(node)) {
+                            log.error("节点[{}] 高度：{}，深度：{}，平衡因子：{}，水平偏移：{}，垂直偏移：{}",
+                                    node.getData(), node.getHeight(), node.calculateDepth(), node.getBalanceFactor(),
+                                    lkPNode.getHorizontalOffsetPercent(), lkPNode.getVerticalOffsetPercent());
+                        } else {
+                            log.info("节点[" + look + "]不存在，look 啥啊？");
+                        }
+                    }
                 } else if (line.startsWith("asc batch")) {
                     line = line.trim();
                     int seqBatch = Integer.parseInt(line.substring("asc batch ".length()));
+                    LocalDateTime start = LocalDateTime.now();
                     for (int i = 0; i < seqBatch; i++) {
+                        if (i % 32768 == 0) {
+                            log.error("当前size: " + bbst.getSize());
+                            log.error("耗时：{} 秒", Duration.between(start, LocalDateTime.now()).getSeconds());
+                        }
                         bbst.insert(i);
                     }
+                    log.error("耗时：{} 秒", Duration.between(start, LocalDateTime.now()).getSeconds());
                     log.error("批量顺序插入完毕");
                 } else if (line.startsWith("desc batch")) {
                     line = line.trim();
@@ -69,12 +115,19 @@ public class TreePrinterApplication {
                 } else if (line.startsWith("search")) {
                     line = line.trim();
                     int search = Integer.parseInt(line.substring("search ".length()));
-                    bbst.search(search, bbst.getRoot());
+                    LocalDateTime start = LocalDateTime.now();
+                    BalanceBinarySearchTree<Integer>.Node result = bbst.search(search, bbst.getRoot());
+                    if (Objects.nonNull(result)) {
+                        log.error ("搜索到数据[" + search + "]耗时{}纳秒", Duration.between(start, LocalDateTime.now()).getNano());
+                    } else {
+                        log.error ("未搜索到数据[" + search + "]耗时{}纳秒", Duration.between(start, LocalDateTime.now()).getNano());
+                    }
                 } else if (line.startsWith("delete")) {
                     line = line.trim();
                     int delete = Integer.parseInt(line.substring("delete ".length()));
+                    LocalDateTime start = LocalDateTime.now();
                     bbst.delete(delete);
-                    log.error("已成功删除元素[" + delete + "]");
+                    log.error("已成功删除元素[" + delete + "]耗时{}", Duration.between(start, LocalDateTime.now()).getSeconds());
                 } else if (line.startsWith("asc delete")) {
                     line = line.trim();
                     int seqBatch = Integer.parseInt(line.substring("asc delete ".length()));
@@ -150,6 +203,13 @@ public class TreePrinterApplication {
                     log.error("删干净了");
                     log.error("根------" + bbst.getRoot());
                     log.error("容量----" + bbst.getSize());
+                } else if (line.startsWith("add")) {
+                    line = line.trim();
+                    int add = Integer.parseInt(line.substring("add ".length()));
+                    boolean insert = bbst.insert(add);
+                    if (insert) {
+                        new PrintableTreeV2(bbst.getRoot()).print();
+                    }
                 } else {
                     final BalanceBinarySearchTree ft = bbst;
                     Arrays.stream(line.trim().split(",")).mapToInt(Integer::parseInt).forEach(e -> ft.insert(e));
@@ -162,6 +222,7 @@ public class TreePrinterApplication {
             }
         }
         scanner.close();
+        System.exit(0);
     }
 }
 

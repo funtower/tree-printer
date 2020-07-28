@@ -76,10 +76,18 @@ public class PrintableTreeV2<T extends Comparable> {
      */
     private Map<Integer, Integer> depthNodePrintRowMapping;
 
+    public PrintableNode getRoot() {
+        return root;
+    }
+
+    public int getMaxHeight() {
+        return maxHeight;
+    }
+
     /**
      * 打印节点
      */
-    private class PrintableNode implements INode<T> {
+    public class PrintableNode implements INode<T> {
         // 父节点
         private PrintableNode parent;
         // 左子节点
@@ -97,6 +105,12 @@ public class PrintableTreeV2<T extends Comparable> {
         private int offset;
         // 打印节点的深度
         private final int printableNodeDepth;
+
+        // 水平偏移百分比
+        private double horizontalOffsetPercent;
+
+        // 垂直偏移百分比
+        private double verticalOffsetPercent;
 
         public PrintableNode(PrintableNode parent, PrintableNode left, PrintableNode right, T data, int printableNodeDepth) {
             this.parent = parent;
@@ -141,6 +155,13 @@ public class PrintableTreeV2<T extends Comparable> {
             return this.right;
         }
 
+        public double getHorizontalOffsetPercent() {
+            return horizontalOffsetPercent;
+        }
+
+        public double getVerticalOffsetPercent() {
+            return verticalOffsetPercent;
+        }
     }
 
     /**
@@ -280,12 +301,16 @@ public class PrintableTreeV2<T extends Comparable> {
 
     public PrintableTreeV2(Node root) {
         if (Objects.isNull(root)) {
+            log.error("根节点为空[NULL]");
             return;
         }
         // 源树和可打印树的高度保持一致
         this.maxHeight = root.getHeight();
         // 将源树复制一份变成可打印树
         PrintableNode pRoot = deepClone(root);
+        if (Objects.isNull(pRoot)) {
+            throw new IllegalStateException("源树根节点不为空，拷贝树的根节点为空，此状态异常，请 DEBUG 检查");
+        }
         // 将子节点用虚拟子节点填满
         fillWithNilNode(pRoot);
         // 将处理好的可打印树的根节点设置为全局变量
@@ -329,6 +354,9 @@ public class PrintableTreeV2<T extends Comparable> {
 
         // countPerLevel 代表下一次访问每层第几个节点
         this.countPerLevel = 1;
+
+        // 构建打印容器
+        buildPrintContainer();
     }
 
     /**
@@ -355,16 +383,32 @@ public class PrintableTreeV2<T extends Comparable> {
      *
      * @return 左偏移量
      */
-    private int calculateOffset() {
+    private int calculateOffset(PrintableNode node) {
+        double standardLeftOffset = this.containerWidth * node.horizontalOffsetPercent;
+        // 在标准左移基础上还要再减去单元块本身长度的二分之一
+        return Math.max((int) standardLeftOffset - unitBlockLength / 2, 0);
+    }
+
+    /**
+     * 计算水平偏移百分比
+     * @return
+     */
+    private double calculateHorizontalOffsetPercent() {
         // 分子的上限值
-        int currentLevelMaxNumerator = (1 << lastAccessDepth) - 1;
-        int numerator = 2 * countPerLevel - 1;
+        int currentLevelMaxNumerator = (1 << this.lastAccessDepth) - 1;
+        int numerator = 2 * this.countPerLevel - 1;
         if (numerator > currentLevelMaxNumerator) {
             throw new IllegalStateException("分子计算发生异常，预期应该不大于 " + currentLevelMaxNumerator + "，但结果等于 " + numerator);
         }
-        int standardLeftOffset = this.containerWidth * numerator / (1 << lastAccessDepth);
-        // 在标准左移基础上还要再减去单元块本身长度的二分之一
-        return Math.max(standardLeftOffset - unitBlockLength / 2, 0);
+        return  ((double) numerator / (1 << this.lastAccessDepth));
+    }
+
+    /**
+     * 计算垂直偏移百分比
+     * @return
+     */
+    private double calculateVerticalOffsetPercent() {
+        return ((double) this.lastAccessDepth / this.maxHeight);
     }
 
     /**
@@ -408,7 +452,10 @@ public class PrintableTreeV2<T extends Comparable> {
                 this.countPerLevel = 1;
                 this.lastAccessDepth++;
             }
-            int currentOffset = calculateOffset();
+            poll.horizontalOffsetPercent = calculateHorizontalOffsetPercent();
+            poll.verticalOffsetPercent = calculateVerticalOffsetPercent();
+            // 计算节点显示部分在容器内的偏移量
+            int currentOffset = calculateOffset(poll);
             System.arraycopy(unitBlock, 0, this.container[this.depthNodePrintRowMapping.get(this.lastAccessDepth) - 1], currentOffset, unitBlockLength);
             // 保存当前节点的偏移量
             poll.offset = currentOffset;
@@ -460,7 +507,7 @@ public class PrintableTreeV2<T extends Comparable> {
                  *      /         \
                  *     /           \
                  *    /             \
-                 *  [7]          [19]
+                 *  [7]            [19]
                  * 连线部分就搞定了！
                  */
                 int item = getItemOfGap(this.lastAccessDepth);
@@ -492,10 +539,8 @@ public class PrintableTreeV2<T extends Comparable> {
 
     public void print() {
         if (Objects.isNull(this.root)) {
-            log.error("节点为空[NULL]");
-            return;
+            log.error("根节点为空[NULL]");
         }
-        buildPrintContainer();
         for (int i = 0; i < container.length; i++) {
 //            挨个儿打印容器元素即可
 //            for (int j = 0; j < container[i].length; j++) {

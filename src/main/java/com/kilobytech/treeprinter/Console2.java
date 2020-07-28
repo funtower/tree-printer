@@ -15,7 +15,7 @@ import java.util.Scanner;
  * @date 2020/7/26
  */
 @Slf4j
-public class Console {
+public class Console2 {
 
     public static void main(String[] args) {
         BalanceBinarySearchTree<Integer> bbst = new BalanceBinarySearchTree();
