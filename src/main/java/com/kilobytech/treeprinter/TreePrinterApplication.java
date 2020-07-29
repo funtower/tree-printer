@@ -35,12 +35,12 @@ public class TreePrinterApplication {
                 } else if (line.startsWith("show")) {
                     line = line.trim();
                     if (line.length() == "show".length()) {
-                        new PrintableTreeV2(bbst.getRoot()).print();
+                        new PrintableTree(bbst.getRoot()).print();
                     } else {
                         int show = Integer.parseInt(line.substring("show ".length()));
-                        BalanceBinarySearchTree.Node node = bbst.search(show, bbst.getRoot());
+                        BalanceBinarySearchTree<Integer>.Node node = bbst.search(show, bbst.getRoot());
                         if (Objects.nonNull(node)) {
-                            new PrintableTreeV2(node).print();
+                            new PrintableTree(node).print();
                         } else {
                             log.info("节点[" + show + "]不存在，show 啥啊？");
                         }
@@ -54,17 +54,17 @@ public class TreePrinterApplication {
                     }
                     if (line.length() == "look".length()) {
                         // 层序遍历挨个儿 look
-                        Queue<BalanceBinarySearchTree.Node> access = new LinkedList<>();
+                        Queue<BalanceBinarySearchTree<Integer>.Node> access = new LinkedList<>();
                         access.offer(root);
                         while (!access.isEmpty()) {
-                            BalanceBinarySearchTree.Node node = access.poll();
-                            PrintableTreeV2<Integer> pt = new PrintableTreeV2<>(bbst.getRoot());
-                            PrintableTreeV2<Integer>.PrintableNode lkPNode = pt.search(node.getData(), pt.getRoot());
+                            BalanceBinarySearchTree<Integer>.Node node = access.poll();
+                            PrintableTree<Integer> pt = new PrintableTree<>(bbst.getRoot());
+                            PrintableTree<Integer>.PrintableNode lkPNode = pt.search(node.getData(), pt.getRoot());
                             log.error("节点[{}] 高度：{}，深度：{}，平衡因子：{}，水平偏移：{}，垂直偏移：{}",
                                     node.getData(), node.getHeight(), node.calculateDepth(), node.getBalanceFactor(),
                                     lkPNode.getHorizontalOffsetPercent(), lkPNode.getVerticalOffsetPercent());
-                            BalanceBinarySearchTree.Node left = node.getLeft();
-                            BalanceBinarySearchTree.Node right = node.getRight();
+                            BalanceBinarySearchTree<Integer>.Node left = node.getLeft();
+                            BalanceBinarySearchTree<Integer>.Node right = node.getRight();
                             if (Objects.nonNull(left)) {
                                 access.offer(left);
                             }
@@ -74,9 +74,9 @@ public class TreePrinterApplication {
                         }
                     } else {
                         int look = Integer.parseInt(line.substring("look ".length()));
-                        BalanceBinarySearchTree.Node node = bbst.search(look, bbst.getRoot());
-                        PrintableTreeV2<Integer> pt = new PrintableTreeV2<>(bbst.getRoot());
-                        PrintableTreeV2<Integer>.PrintableNode lkPNode = pt.search(look, pt.getRoot());
+                        BalanceBinarySearchTree<Integer>.Node node = bbst.search(look, bbst.getRoot());
+                        PrintableTree<Integer> pt = new PrintableTree<>(bbst.getRoot());
+                        PrintableTree<Integer>.PrintableNode lkPNode = pt.search(look, pt.getRoot());
                         if (Objects.nonNull(node)) {
                             log.error("节点[{}] 高度：{}，深度：{}，平衡因子：{}，水平偏移：{}，垂直偏移：{}",
                                     node.getData(), node.getHeight(), node.calculateDepth(), node.getBalanceFactor(),
@@ -209,10 +209,10 @@ public class TreePrinterApplication {
                     int add = Integer.parseInt(line.substring("add ".length()));
                     boolean insert = bbst.insert(add);
                     if (insert) {
-                        new PrintableTreeV2(bbst.getRoot()).print();
+                        new PrintableTree(bbst.getRoot()).print();
                     }
                 } else {
-                    final BalanceBinarySearchTree ft = bbst;
+                    final BalanceBinarySearchTree<Integer> ft = bbst;
                     Arrays.stream(line.trim().split(",")).mapToInt(Integer::parseInt).forEach(e -> ft.insert(e));
                     log.error("root = [" + bbst.getRoot().getData() + "]节点的平衡因子：" + bbst.getRoot().getBalanceFactor());
                     log.error("root = [" + bbst.getRoot().getData() + "]节点的高度：" + bbst.getRoot().getHeight());

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * @date 2020/7/25
  */
 @Slf4j
-public class PrintableTreeV2<T extends Comparable> {
+public class PrintableTree<T extends Comparable> {
 
     // 树的根节点
     private PrintableNode root;
@@ -299,7 +299,7 @@ public class PrintableTreeV2<T extends Comparable> {
                 .collect(Collectors.summarizingInt(e -> e)).getMax();
     }
 
-    public PrintableTreeV2(Node root) {
+    public PrintableTree(Node root) {
         if (Objects.isNull(root)) {
             log.error("根节点为空[NULL]");
             return;
@@ -539,7 +539,7 @@ public class PrintableTreeV2<T extends Comparable> {
 
     public void print() {
         if (Objects.isNull(this.root)) {
-            log.error("根节点为空[NULL]");
+            return;
         }
         for (int i = 0; i < container.length; i++) {
 //            挨个儿打印容器元素即可

@@ -3,22 +3,37 @@
 #### 介绍
 Java 语言实现的树节点打印工具
 
-#### 软件架构
-软件架构说明
-
-
 #### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+    mvn clean install -Dmaven.test.skip=true
 
 #### 使用说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1.  运行 TreePrinterApplication
+2.  在控制台输入命令与程序交互
 
+#### 命令集
+    插入节点：
+        输入一个数字或多个数字用","分隔，例如：1,2,3,4,5
+    删除节点：
+        delete 2
+    树状图显示：
+        show或者show 3
+    清空树上所有节点：
+        clean
+    批量插入：
+        batch 个数，例如：batch 6，批量随机插入 6 个元素
+    顺序批量插入：
+        asc batch 起始数字，例如：asc batch 6，从0开始一直插入到6
+    倒序批量插入：
+        desc batch 起始数字，例如：desc batch 6，从6开始一直插入到0
+    查看：   
+        look 节点数据，例如：look 3，则打印数据为三的节点的高度、深度、平衡因子、坐标信息
+    搜索：
+        search 节点数据，例如 search 2，则搜索 2
+    查看size:
+        size
+        
 #### 参与贡献
 
 1.  Fork 本仓库

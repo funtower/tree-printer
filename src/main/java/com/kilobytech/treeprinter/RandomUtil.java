@@ -3,12 +3,6 @@ package com.kilobytech.treeprinter;
 import java.util.Random;
 import java.util.Set;
 
-/**
- * @author huangtao
- * @Title: RandomUtil
- * @Description: 生成指定区间的随机数
- * @date 2020/7/24
- */
 public interface RandomUtil {
     Random r = new Random();
 
