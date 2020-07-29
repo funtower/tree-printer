@@ -303,12 +303,14 @@ public class BalanceBinarySearchTree<E extends Comparable> {
         if (Objects.isNull(this.root)) {
             this.root = newNode;
             size++;
+            log.info("新增根节点[{}]成功", data);
             return true;
         }
         // 搜索并将新节点挂载
         Node reBalance = searchAndMount(newNode, root);
         reBalance(reBalance);
         size++;
+        log.info("新增节点[{}]成功", data);
         return true;
     }
 
