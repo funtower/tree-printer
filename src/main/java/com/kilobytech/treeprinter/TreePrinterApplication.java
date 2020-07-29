@@ -118,9 +118,9 @@ public class TreePrinterApplication {
                     LocalDateTime start = LocalDateTime.now();
                     BalanceBinarySearchTree<Integer>.Node result = sourceTree.search(search, sourceTree.getRoot());
                     if (Objects.nonNull(result)) {
-                        log.info ("搜索到数据[" + search + "]耗时{}纳秒", Duration.between(start, LocalDateTime.now()).getNano());
+                        log.info("搜索到数据[" + search + "]耗时{}纳秒", Duration.between(start, LocalDateTime.now()).getNano());
                     } else {
-                        log.info ("未搜索到数据[" + search + "]耗时{}纳秒", Duration.between(start, LocalDateTime.now()).getNano());
+                        log.info("未搜索到数据[" + search + "]耗时{}纳秒", Duration.between(start, LocalDateTime.now()).getNano());
                     }
                 } else if (line.startsWith("delete")) {
                     line = line.trim();

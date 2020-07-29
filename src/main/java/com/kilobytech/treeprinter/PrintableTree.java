@@ -400,7 +400,7 @@ public class PrintableTree<E extends Comparable> {
         if (numerator > currentLevelMaxNumerator) {
             throw new IllegalStateException("分子计算发生异常，预期应该不大于 " + currentLevelMaxNumerator + "，但结果等于 " + numerator);
         }
-        return  ((double) numerator / (1 << this.lastAccessDepth));
+        return ((double) numerator / (1 << this.lastAccessDepth));
     }
 
     /**
