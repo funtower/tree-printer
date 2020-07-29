@@ -6,14 +6,6 @@ import java.util.Set;
 public interface RandomUtil {
     Random r = new Random();
 
-    static void main(String[] args) {
-
-        for (; ; ) {
-            System.out.println(getRandomStringInRange(10000000, 99999999));
-            System.out.println(getRandomIntInRange(100, 999));
-        }
-    }
-
     /**
      * @param min
      * @param max

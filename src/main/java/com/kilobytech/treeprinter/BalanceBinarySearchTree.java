@@ -145,7 +145,7 @@ public class BalanceBinarySearchTree<E extends Comparable> {
         Node p = delete.parent;
         switch (deleteType) {
             case NIL:
-                log.info("被删除节点[" + delete.data + "]为叶子节点");
+                log.debug("被删除节点[" + delete.data + "]为叶子节点");
                 if (delete == root) {
                     root = null;
                     return null;
@@ -154,17 +154,17 @@ public class BalanceBinarySearchTree<E extends Comparable> {
                     return p;
                 }
             case LEFT_ONLY:
-                log.info("被删除节点[" + delete.data + "]仅有左节点");
+                log.debug("被删除节点[" + delete.data + "]仅有左节点");
                 Node leftChild = delete.left;
                 connectParentWithGrandchild(delete, p, leftChild);
                 return leftChild;
             case RIGHT_ONLY:
-                log.info("被删除节点[" + delete.data + "]仅有右节点");
+                log.debug("被删除节点[" + delete.data + "]仅有右节点");
                 Node rightChild = delete.right;
                 connectParentWithGrandchild(delete, p, rightChild);
                 return rightChild;
             default:
-                log.info("被删除节点[" + delete.data + "]既有左节点，又有右节点");
+                log.debug("被删除节点[" + delete.data + "]既有左节点，又有右节点");
                 int dBF = delete.balanceFactor;
                 Node newDelete;
                 if (dBF >= 0) {
@@ -253,13 +253,13 @@ public class BalanceBinarySearchTree<E extends Comparable> {
             return null;
         }
         if (data.compareTo(search.getData()) < 0) {
-            log.info("节点[" + data + "] 比当前搜寻节点 [" + search.getData() + "] 小，继续往左搜寻");
+            log.debug("节点[" + data + "] 比当前搜寻节点 [" + search.getData() + "] 小，继续往左搜寻");
             return search(data, search.getLeft());
         } else if (data.compareTo(search.getData()) > 0) {
-            log.info("节点[" + data + "] 比当前搜寻节点 [" + search.getData() + "] 大，继续往右搜寻");
+            log.debug("节点[" + data + "] 比当前搜寻节点 [" + search.getData() + "] 大，继续往右搜寻");
             return search(data, search.getRight());
         }
-        log.info("节点[" + data + "] 等于当前搜寻节点 [" + search.getData() + "] 停止搜寻");
+        log.debug("节点[" + data + "] 等于当前搜寻节点 [" + search.getData() + "] 停止搜寻");
         return search;
     }
 
@@ -332,12 +332,12 @@ public class BalanceBinarySearchTree<E extends Comparable> {
      * 旋转至平衡
      */
     private void rotate2Balance(Node rotate) {
-        log.info("节点 [" + rotate.data + "] recalculate BF: " + rotate.balanceFactor + " recalculate HG: " + rotate.height);
+        log.debug("节点 [" + rotate.data + "] recalculate BF: " + rotate.balanceFactor + " recalculate HG: " + rotate.height);
         if (CalculatorHelper.abs(rotate.balanceFactor) < 2) {
-            log.info("节点 [" + rotate.data + "] 已平衡，无需旋转");
+            log.debug("节点 [" + rotate.data + "] 已平衡，无需旋转");
             return;
         }
-        log.info("节点 [" + rotate.data + "] 不平衡，开始旋转");
+        log.debug("节点 [" + rotate.data + "] 不平衡，开始旋转");
         RotateType rotateType = rotateType(rotate);
         switch (rotateType) {
             case R:
@@ -424,8 +424,8 @@ public class BalanceBinarySearchTree<E extends Comparable> {
 
         ndL.height = calculateHeight(ndL);
         ndL.balanceFactor = calculateBalanceFactor(ndL);
-        log.info("[" + node.data + "] 节点右旋完毕，新节点[" + ndL.data + "]平衡因子：" + ndL.balanceFactor);
-        log.info("[" + node.data + "] 节点右旋完毕，新节点[" + ndL.data + "]高度：" + ndL.height);
+        log.debug("[" + node.data + "] 节点右旋完毕，新节点[" + ndL.data + "]平衡因子：" + ndL.balanceFactor);
+        log.debug("[" + node.data + "] 节点右旋完毕，新节点[" + ndL.data + "]高度：" + ndL.height);
         return ndL;
     }
 
@@ -465,8 +465,8 @@ public class BalanceBinarySearchTree<E extends Comparable> {
 
         ndR.height = calculateHeight(ndR);
         ndR.balanceFactor = calculateBalanceFactor(ndR);
-        log.info("[" + node.data + "] 节点左旋完毕，新节点[" + ndR.data + "]平衡因子：" + ndR.balanceFactor);
-        log.info("[" + node.data + "] 节点左旋完毕，新节点[" + ndR.data + "]高度：" + ndR.height);
+        log.debug("[" + node.data + "] 节点左旋完毕，新节点[" + ndR.data + "]平衡因子：" + ndR.balanceFactor);
+        log.debug("[" + node.data + "] 节点左旋完毕，新节点[" + ndR.data + "]高度：" + ndR.height);
         return ndR;
     }
 
@@ -534,7 +534,7 @@ public class BalanceBinarySearchTree<E extends Comparable> {
     private void reCalculateBalanceFactorAndHeight(Node node) {
         node.height = calculateHeight(node);
         node.balanceFactor = calculateBalanceFactor(node);
-        log.info("节点 [" + node.data + "] recalculate BF: " + node.balanceFactor + " recalculate HG: " + node.height);
+        log.debug("节点 [" + node.data + "] recalculate BF: " + node.balanceFactor + " recalculate HG: " + node.height);
     }
 
 }

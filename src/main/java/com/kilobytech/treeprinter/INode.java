@@ -1,22 +1,20 @@
 package com.kilobytech.treeprinter;
 
-import java.util.Comparator;
-
 /**
  * @author huangtao
  * @Title: INode
  * @Description:
  * @date 2020/7/26
  */
-public interface INode<T extends Comparable> {
+public interface INode<E extends Comparable> {
 
-    T getData();
+    E getData();
 
-    INode<T> getParent();
+    INode<E> getParent();
 
-    INode<T> getLeft();
+    INode<E> getLeft();
 
-    INode<T> getRight();
+    INode<E> getRight();
 
     /**
      * 从本节点开始向上递归计算深度

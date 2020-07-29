@@ -19,6 +19,11 @@ class TreePrinterApplicationTests {
     }
 
     @Test
+    void contextLoads3() {
+        System.out.println("desc batch ".length());
+    }
+
+    @Test
     void contextLoads2() {
         Map<Integer, Integer> map = new HashMap<>();
         map.put(1, 1);

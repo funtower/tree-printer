@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * @date 2020/7/25
  */
 @Slf4j
-public class PrintableTree<T extends Comparable> {
+public class PrintableTree<E extends Comparable> {
 
     // 树的根节点
     private PrintableNode root;
@@ -87,7 +87,7 @@ public class PrintableTree<T extends Comparable> {
     /**
      * 打印节点
      */
-    public class PrintableNode implements INode<T> {
+    public class PrintableNode implements INode<E> {
         // 父节点
         private PrintableNode parent;
         // 左子节点
@@ -100,7 +100,7 @@ public class PrintableTree<T extends Comparable> {
          */
         private String nilParent;
         // 节点数据
-        private final T data;
+        private final E data;
         // 节点的偏移量
         private int offset;
         // 打印节点的深度
@@ -112,7 +112,7 @@ public class PrintableTree<T extends Comparable> {
         // 垂直偏移百分比
         private double verticalOffsetPercent;
 
-        public PrintableNode(PrintableNode parent, PrintableNode left, PrintableNode right, T data, int printableNodeDepth) {
+        public PrintableNode(PrintableNode parent, PrintableNode left, PrintableNode right, E data, int printableNodeDepth) {
             this.parent = parent;
             this.left = left;
             this.right = right;
@@ -120,7 +120,7 @@ public class PrintableTree<T extends Comparable> {
             this.printableNodeDepth = printableNodeDepth;
         }
 
-        public PrintableNode(PrintableNode parent, PrintableNode left, PrintableNode right, T data, int printableNodeDepth, String nilParent) {
+        public PrintableNode(PrintableNode parent, PrintableNode left, PrintableNode right, E data, int printableNodeDepth, String nilParent) {
             this(parent, left, right, data, printableNodeDepth);
             this.nilParent = nilParent;
         }
@@ -136,22 +136,22 @@ public class PrintableTree<T extends Comparable> {
         }
 
         @Override
-        public T getData() {
+        public E getData() {
             return this.data;
         }
 
         @Override
-        public INode<T> getParent() {
+        public INode<E> getParent() {
             return this.parent;
         }
 
         @Override
-        public INode<T> getLeft() {
+        public INode<E> getLeft() {
             return this.left;
         }
 
         @Override
-        public INode<T> getRight() {
+        public INode<E> getRight() {
             return this.right;
         }
 
@@ -172,17 +172,17 @@ public class PrintableTree<T extends Comparable> {
      */
     public <T extends Comparable> PrintableNode search(T data, PrintableNode search) {
         if (Objects.isNull(search)) {
-            log.info("未找到节点 [" + data + "]");
+            log.debug("未找到节点 [" + data + "]");
             return null;
         }
         if (data.compareTo(search.getData()) < 0) {
-            log.info("节点[" + data + "] 比当前搜寻节点 [" + search.getData() + "] 小，继续往左搜寻");
+            log.debug("节点[" + data + "] 比当前搜寻节点 [" + search.getData() + "] 小，继续往左搜寻");
             return search(data, search.left);
         } else if (data.compareTo(search.getData()) > 0) {
-            log.info("节点[" + data + "] 比当前搜寻节点 [" + search.getData() + "] 大，继续往右搜寻");
+            log.debug("节点[" + data + "] 比当前搜寻节点 [" + search.getData() + "] 大，继续往右搜寻");
             return search(data, search.right);
         } else {
-            log.info("节点[" + data + "] 等于当前搜寻节点 [" + search.getData() + "] 停止搜寻");
+            log.debug("节点[" + data + "] 等于当前搜寻节点 [" + search.getData() + "] 停止搜寻");
             return search;
         }
     }
@@ -223,7 +223,7 @@ public class PrintableTree<T extends Comparable> {
         // 队列先进先出
         Queue<Node> access = new LinkedList();
         // 根据给定的源树根节点复制一个可打印树的根节点
-        PrintableNode pRoot = new PrintableNode(null, null, null, (T) bTreeRoot.getData(), 1);
+        PrintableNode pRoot = new PrintableNode(null, null, null, (E) bTreeRoot.getData(), 1);
         // 将根节点入队
         access.add(bTreeRoot);
         while (!access.isEmpty()) {
@@ -238,14 +238,14 @@ public class PrintableTree<T extends Comparable> {
             if (Objects.nonNull(node.getLeft())) {
                 // 左子节点入队
                 access.offer(node.getLeft());
-                pNode.left = new PrintableNode(pNode, null, null, (T) node.getLeft().getData(), depth + 1);
+                pNode.left = new PrintableNode(pNode, null, null, (E) node.getLeft().getData(), depth + 1);
             } else if (depth < bTreeRoot.getHeight()) {
                 pNode.left = new PrintableNode(pNode, null, null, null, depth + 1, "L-NIL-" + pNode.getData());
             }
             if (Objects.nonNull(node.getRight())) {
                 // 右子节点入队
                 access.offer(node.getRight());
-                pNode.right = new PrintableNode(pNode, null, null, (T) node.getRight().getData(), depth + 1);
+                pNode.right = new PrintableNode(pNode, null, null, (E) node.getRight().getData(), depth + 1);
             } else if (depth < bTreeRoot.getHeight()) {
                 pNode.right = new PrintableNode(pNode, null, null, null, depth + 1, "R-NIL-" + pNode.getData());
             }
@@ -301,7 +301,7 @@ public class PrintableTree<T extends Comparable> {
 
     public PrintableTree(Node root) {
         if (Objects.isNull(root)) {
-            log.error("根节点为空[NULL]");
+            log.info("根节点为空[NULL]");
             return;
         }
         // 源树和可打印树的高度保持一致
@@ -442,7 +442,7 @@ public class PrintableTree<T extends Comparable> {
             // 出队一个节点
             PrintableNode poll = q.poll();
             // 处理这个节点
-            log.info("正在处理节点" + poll);
+            log.debug("正在处理节点" + poll);
             char[] unitBlock = buildUnitBlock(poll);
 
             int currentDepth = poll.printableNodeDepth;
@@ -547,7 +547,7 @@ public class PrintableTree<T extends Comparable> {
 //                System.out.print(container[i][j]);
 //            }
             // 当然也可以直接将整行字符数组创建成一个字符串来打印
-            log.error(new String(container[i]));
+            log.info(new String(container[i]));
         }
     }
 
