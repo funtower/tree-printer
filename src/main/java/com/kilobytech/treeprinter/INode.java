@@ -1,5 +1,7 @@
 package com.kilobytech.treeprinter;
 
+import java.util.Objects;
+
 /**
  * @author huangtao
  * @Title: INode
@@ -8,12 +10,28 @@ package com.kilobytech.treeprinter;
  */
 public interface INode<E extends Comparable> {
 
+    /**
+     * 获取数据
+     * @return
+     */
     E getData();
 
+    /**
+     * 获取父节点
+     * @return
+     */
     INode<E> getParent();
 
+    /**
+     * 获取左节点
+     * @return
+     */
     INode<E> getLeft();
 
+    /**
+     * 获取右节点
+     * @return
+     */
     INode<E> getRight();
 
     /**
@@ -21,7 +39,7 @@ public interface INode<E extends Comparable> {
      * @return depth
      */
     default int calculateDepth() {
-        if (getParent() == null) {
+        if (Objects.isNull(getParent())) {
             return 1;
         }
         return getParent().calculateDepth() + 1;

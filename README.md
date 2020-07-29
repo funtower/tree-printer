@@ -11,6 +11,53 @@ Java 语言实现的树节点打印工具
 
 1.  运行 TreePrinterApplication
 2.  在控制台输入命令与程序交互
+3.  如果朋友是想打印自己写的树那也是没问题的，只要你的树是二叉树，那么只要实现**com.kilobytech.treeprinter.INode**接口，实现里面的四个方法即可
+    ```java
+    package com.kilobytech.treeprinter;
+    
+    import java.util.Objects;
+    
+    public interface INode<E extends Comparable> {
+    
+        /**
+         * 获取数据
+         * @return
+         */
+        E getData();
+    
+        /**
+         * 获取父节点
+         * @return
+         */
+        INode<E> getParent();
+    
+        /**
+         * 获取左节点
+         * @return
+         */
+        INode<E> getLeft();
+    
+        /**
+         * 获取右节点
+         * @return
+         */
+        INode<E> getRight();
+    
+        /**
+         * 从本节点开始向上递归计算深度
+         * @return depth
+         */
+        default int calculateDepth() {
+            if (Objects.isNull(getParent())) {
+                return 1;
+            }
+            return getParent().calculateDepth() + 1;
+        }
+    
+    }
+    ```
+    有一点需要注意，就是因为这节点的数据必须要有大小，可以比较排序，所以数据必须必须实现了Comparable接口的。比如你的数据是Integer类型的，那么Integer是有大小可以比较的，因为Integer实现了Comparable 接口
+    然后只需要 new PrintableTree(你的树根节点).print();就可以打印出你的树型图了
 
 #### 命令集
     插入节点：
