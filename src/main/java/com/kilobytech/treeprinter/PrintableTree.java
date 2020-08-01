@@ -155,6 +155,10 @@ public class PrintableTree<E extends Comparable> {
             return this.right;
         }
 
+        public int getPrintableNodeDepth() {
+            return printableNodeDepth;
+        }
+
         public double getHorizontalOffsetPercent() {
             return horizontalOffsetPercent;
         }
@@ -376,7 +380,7 @@ public class PrintableTree<E extends Comparable> {
      * 3		width * (1 / 8 )	width * (3 / 8 )	width * (5 / 8 )	width * (7 / 8 )
      * 4		width * (1 / 16)	width * (3 / 16)	width * (5 / 16)	width * (7 / 16)	width * (9 / 16)	width * (11 / 16)	width * (13 / 16)	width * (15 / 16)
      * ……
-     * n 		width * (1 / (1 << n)) 	width * (3 / (1 << n)) 	width * (2 * countPerLevel - 1 / (1 << n))    分子按照奇数项递增…… 		width * ((1 << n) - 1 / (1 << n))
+     * n 		width * 1 / (1 << n) 	width * 3 / (1 << n)    分子按照奇数项递增…… 	  width * (2 * countPerLevel - 1) / (1 << n)    分子按照奇数项递增…… 		width * ((1 << n) - 1) / (1 << n))
      * 解释一下：
      * width 代表打印容器的最大宽度，也就是最底层的元素个数 * 2 ^ (树高度 - 1)
      * countPerLevel 代表下一次访问每层第几个节点，在同一层每访问一个节点，该值就会加一，当该层访问完了之后，深度 depth 就会加一，并且这个时候 countPerLevel 值会复位到 1

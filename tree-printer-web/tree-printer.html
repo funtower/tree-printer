@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>jtopo</title>
+	<script src="./js/jquery-2.1.4.min.js" type="text/javascript"></script>
+	<script src="./js/jtopo-0.4.8-min.js" type="text/javascript"></script>
+	<script src="./js/toolbar.js" type="text/javascript"></script>
+	<script src="./js/axios-0.19.2.min.js"></script>
+	<script>
+		let baseUrl = 'http://localhost:8192'
+		let inputData = new Array();
+		let canvas, stage, scene, root;
+		let allNodes = new Map();
+		const canvasWidth = 1350;
+		const canvasHeight = 100;
+		$(document).ready(function () {
+			canvas = document.getElementById('canvas');
+			stage = new JTopo.Stage(canvas);
+			//显示工具栏
+			showJTopoToobar(stage);
+			scene = new JTopo.Scene();
+			stage.add(scene);
+			scene.background = './img/bg.jpg';
+			stage.mode = 'normal';
+			stage.wheelZoom = 1.2; // 设置鼠标缩放比例
+		});
+	</script>
+</head>
+
+<body>
+	<div id="content">
+		<canvas id="canvas" width="1350px" height="580"
+			style=" background-color:#EEEEEE; border:1px solid #444;"></canvas>
+	</div>
+</body>
+
+</html>

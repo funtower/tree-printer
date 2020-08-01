@@ -36,13 +36,13 @@ public class TreePrinterApplication {
                 } else if (line.startsWith("show")) {
                     line = line.trim();
                     if (line.length() == "show".length()) {
-                        new PrintableTree(sourceTree.getRoot()).print();
+                        new PrintableTree<Integer>(sourceTree.getRoot()).print();
                         log.error("show 后面还可以跟参数[你要查看的数据]，例如：show 93 回车");
                     } else {
                         int show = Integer.parseInt(line.substring("show ".length()));
                         BalanceBinarySearchTree<Integer>.Node node = sourceTree.search(show, sourceTree.getRoot());
                         if (Objects.nonNull(node)) {
-                            new PrintableTree(node).print();
+                            new PrintableTree<Integer>(node).print();
                         } else {
                             log.warn("节点[" + show + "]不存在，show 啥啊？");
                             log.info("不妨先插入，例如：add {}", show);
@@ -236,7 +236,7 @@ public class TreePrinterApplication {
                     int add = Integer.parseInt(line.substring("add ".length()));
                     boolean insert = sourceTree.insert(add);
                     if (insert) {
-                        new PrintableTree(sourceTree.getRoot()).print();
+                        new PrintableTree<Integer>(sourceTree.getRoot()).print();
                     }
                     log.info("你现在可以搜索刚插入的这个节点，例如：search {}", add);
                 } else {
