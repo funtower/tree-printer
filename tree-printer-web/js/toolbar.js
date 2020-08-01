@@ -50,6 +50,7 @@ function connectLine(from, to) {
 	let link = new JTopo.Link(from, to);
 	link.arrowsRadius = 8;
 	link.alpha = 0.75;
+	link.strokeColor = '187,187,119';
 	scene.add(link);
 }
 
