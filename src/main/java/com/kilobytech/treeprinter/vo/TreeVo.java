@@ -1,4 +1,4 @@
-package com.kilobytech.treeprinter;
+package com.kilobytech.treeprinter.vo;
 
 import lombok.Data;
 

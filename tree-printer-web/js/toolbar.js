@@ -33,7 +33,9 @@ function buildTree(tree) {
 function insertNode(el) {
 	let node = new JTopo.CircleNode(el.data);
 	node.radius = 15;
-	node.fillStyle = '200,255,0';
+	debugger;
+	node.fillColor = '68,255,255';
+	node.alpha = 0.75;
 	let horizontal = canvasWidth * el.horizontalOffsetPercent;
 	let vertical = canvasHeight * el.verticalOffsetPercent;
 	node.setLocation(horizontal, vertical);
@@ -46,6 +48,8 @@ function insertNode(el) {
 // 将节点之间建立连线
 function connectLine(from, to) {
 	let link = new JTopo.Link(from, to);
+	link.arrowsRadius = 8;
+	link.alpha = 0.75;
 	scene.add(link);
 }
 

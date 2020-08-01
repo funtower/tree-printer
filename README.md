@@ -11,9 +11,9 @@ Java 语言实现的树节点打印工具
 
 1.  运行 TreePrinterApplication
 2.  在控制台输入命令与程序交互
-3.  如果朋友是想打印自己写的树那也是没问题的，只要你的树是二叉树，那么只要实现**com.kilobytech.treeprinter.INode**接口，实现里面的四个方法即可
+3.  如果朋友是想打印自己写的树那也是没问题的，只要你的树是二叉树，那么只要实现**com.kilobytech.treeprinter.tree.INode**接口，实现里面的四个方法即可
     ```java
-    package com.kilobytech.treeprinter;
+    package com.kilobytech.treeprinter.tree;
     
     import java.util.Objects;
     

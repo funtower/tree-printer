@@ -1,4 +1,4 @@
-package com.kilobytech.treeprinter;
+package com.kilobytech.treeprinter.tree;
 
 import java.util.Objects;
 

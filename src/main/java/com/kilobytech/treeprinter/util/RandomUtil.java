@@ -1,4 +1,4 @@
-package com.kilobytech.treeprinter;
+package com.kilobytech.treeprinter.util;
 
 import java.util.Random;
 import java.util.Set;

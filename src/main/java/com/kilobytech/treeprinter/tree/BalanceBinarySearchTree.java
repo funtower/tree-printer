@@ -1,5 +1,6 @@
-package com.kilobytech.treeprinter;
+package com.kilobytech.treeprinter.tree;
 
+import com.kilobytech.treeprinter.util.CalculatorHelper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
