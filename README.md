@@ -10,7 +10,7 @@ Java 语言实现的树节点打印工具
 #### 使用说明
 
 1.  运行 TreePrinterApplication
-2.  在控制台输入命令与程序交互（下面又命令集）或者进入tree-printer-web/目录下，通过浏览器访问tree-printer.html就可以进行web端的增删查功能演示
+2.  在控制台输入命令与程序交互（下面有命令集）或者进入tree-printer-web/目录下，通过浏览器访问tree-printer.html就可以进行web端的增删查功能演示
 3.  如果朋友是想打印自己写的树那也是没问题的，只要你的树是二叉树，那么只要实现**com.kilobytech.treeprinter.tree.INode**接口，实现里面的四个方法即可
     ```java
     package com.kilobytech.treeprinter.tree;
