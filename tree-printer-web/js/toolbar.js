@@ -73,6 +73,7 @@ function showJTopoToobar(stage) {
 	var toobarDiv = $('<div class="jtopo_toolbar"/>').html(''
 		+ '&nbsp;&nbsp;<input type="button" id="centerButton" value="居中显示"/>'
 		+ '&nbsp;&nbsp;<input type="button" id="ascBatchInsert63" value="顺序插入63个数"/>'
+		+ '&nbsp;&nbsp;<input type="button" id="clearTree" value="清空树"/>'
 		+ '&nbsp;&nbsp;<input type="text" id="findText" style="width: 100px;" value="" onkeydown="enterPressHandler(event)">'
 		+ '<input type="button" id="findButton" value=" 查 询 ">'
 		+ '&nbsp;&nbsp;<input type="text" id="insertText" style="width: 100px;"">'
@@ -92,6 +93,11 @@ function showJTopoToobar(stage) {
 	// 演示顺序插入63个数
 	$('#ascBatchInsert63').click(function () {
 		renderTree();
+	});
+	$('#clearTree').click(function () {
+		scene.clear();
+		inputData = new Array();
+		root = null;
 	});
 	$('#exportButton').click(function () {
 		stage.saveImageInfo();
