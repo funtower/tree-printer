@@ -50,6 +50,8 @@ function connectLine(from, to) {
 }
 
 function renderTree() {
+	scene.clear();
+	inputData = new Array();
 	axios.get(baseUrl + "/print/63")
 		.then(function (response) {
 			console.log("根节点：" + response.data.root.data);
@@ -162,6 +164,7 @@ function showJTopoToobar(stage) {
 				inputData = new Array();
 				if (!tree) {
 					$('#deleteText').val('');
+					root = null;
 					return;
 				}
 				for (const nodeVo of tree.nodes) {
