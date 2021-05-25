@@ -184,12 +184,8 @@ public class BalanceBinarySearchTree<E extends Comparable> {
      * @param newDelete
      */
     private void swapValue(Node delete, Node newDelete) {
-        Comparable tmp = delete.getData();
+        Comparable<?> tmp = delete.getData();
         delete.setData(newDelete.getData());
-        // 小知识点：
-        // 问：为啥设置了泛型还要强转？
-        // 答：因为 Node getData 出来的东西一定是泛型 E 类型的，
-        // 所以强制约定你必须能够强转成E的才允许你往里放
         newDelete.setData((E) tmp);
     }
 
