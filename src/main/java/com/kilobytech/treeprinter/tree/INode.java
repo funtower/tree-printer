@@ -12,30 +12,35 @@ public interface INode<E extends Comparable> {
 
     /**
      * 获取数据
+     *
      * @return
      */
     E getData();
 
     /**
      * 获取父节点
+     *
      * @return
      */
     INode<E> getParent();
 
     /**
      * 获取左节点
+     *
      * @return
      */
     INode<E> getLeft();
 
     /**
      * 获取右节点
+     *
      * @return
      */
     INode<E> getRight();
 
     /**
      * 从本节点开始向上递归计算深度
+     *
      * @return depth
      */
     default int calculateDepth() {

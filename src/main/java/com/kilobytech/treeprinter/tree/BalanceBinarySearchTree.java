@@ -104,6 +104,7 @@ public class BalanceBinarySearchTree<E extends Comparable> {
 
     /**
      * 删除数据
+     *
      * @param data
      * @return
      */
@@ -180,6 +181,7 @@ public class BalanceBinarySearchTree<E extends Comparable> {
 
     /**
      * 交换两个节点的数据
+     *
      * @param delete
      * @param newDelete
      */
@@ -195,6 +197,7 @@ public class BalanceBinarySearchTree<E extends Comparable> {
 
     /**
      * 从父节点上删除指定节点
+     *
      * @param delete
      * @param parent
      */
@@ -208,6 +211,7 @@ public class BalanceBinarySearchTree<E extends Comparable> {
 
     /**
      * 中间节点要被删除时，建立父节点和孙节点的关系
+     *
      * @param delete
      * @param parent
      * @param grandchild
@@ -227,6 +231,7 @@ public class BalanceBinarySearchTree<E extends Comparable> {
 
     /**
      * 计算删除节点类型
+     *
      * @param node
      * @return
      */
@@ -244,6 +249,7 @@ public class BalanceBinarySearchTree<E extends Comparable> {
 
     /**
      * 搜索
+     *
      * @param data
      * @param search
      * @return
@@ -266,6 +272,7 @@ public class BalanceBinarySearchTree<E extends Comparable> {
 
     /**
      * 从指定节点开始搜索最大值
+     *
      * @param start
      * @return
      */
@@ -278,6 +285,7 @@ public class BalanceBinarySearchTree<E extends Comparable> {
 
     /**
      * 从指定节点开始搜索最小值
+     *
      * @param start
      * @return
      */
@@ -290,6 +298,7 @@ public class BalanceBinarySearchTree<E extends Comparable> {
 
     /**
      * 插入新值
+     *
      * @param data
      * @return
      */
@@ -475,6 +484,7 @@ public class BalanceBinarySearchTree<E extends Comparable> {
 
     /**
      * 计算平衡因子
+     *
      * @param node
      * @return
      */
@@ -486,6 +496,7 @@ public class BalanceBinarySearchTree<E extends Comparable> {
 
     /**
      * 计算高度
+     *
      * @param node
      * @return
      */
@@ -497,6 +508,7 @@ public class BalanceBinarySearchTree<E extends Comparable> {
 
     /**
      * 增加新节点
+     *
      * @param newNode
      * @param mount
      */
@@ -511,6 +523,7 @@ public class BalanceBinarySearchTree<E extends Comparable> {
 
     /**
      * 搜索挂载节点，并将新节点挂载上去
+     *
      * @param newNode
      * @param mount
      * @return

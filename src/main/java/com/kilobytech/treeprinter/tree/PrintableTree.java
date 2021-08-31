@@ -3,7 +3,12 @@ package com.kilobytech.treeprinter.tree;
 import com.kilobytech.treeprinter.tree.BalanceBinarySearchTree.Node;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.stream.Collectors;
 
@@ -55,21 +60,21 @@ public class PrintableTree<E extends Comparable> {
     /**
      * 节点深度和打印容器行数的对应关系
      * 举个例子：
-     *  1                [74]
-     *  2                 ∧
-     *  3                / \
-     *  4               /   \
-     *  5              /     \
-     *  6             /       \
-     *  7            /         \
-     *  8           /           \
-     *  9          /             \
-     *  10       [63]          [94]
-     *  11        ∧            ∧
-     *  12       / \           / \
-     *  13      /   \         /   \
-     *  14     /     \       /     \
-     *  15  [61]   [71]   [75]   [95]
+     * 1                [74]
+     * 2                 ∧
+     * 3                / \
+     * 4               /   \
+     * 5              /     \
+     * 6             /       \
+     * 7            /         \
+     * 8           /           \
+     * 9          /             \
+     * 10       [63]          [94]
+     * 11        ∧            ∧
+     * 12       / \           / \
+     * 13      /   \         /   \
+     * 14     /     \       /     \
+     * 15  [61]   [71]   [75]   [95]
      * 这样一棵二叉树，深度(depth)是1，打印的行数是1，所以他们的对应关系就是1 -> 1，
      * 深度是2，打印行数是10，所以他们的对应关系就是2 -> 10，同理可知3 -> 15，这个
      * 这个就是以深度(depth)为key，打印行为值的集合
@@ -127,6 +132,7 @@ public class PrintableTree<E extends Comparable> {
 
         /**
          * 若当前节点不为空节点，就打印该节点的数据，否则就打印该节点的的非空父节点并加上 NIL 标识
+         *
          * @return
          */
         @Override
@@ -170,6 +176,7 @@ public class PrintableTree<E extends Comparable> {
 
     /**
      * 从根节点开始搜索指定节点
+     *
      * @param data
      * @param search
      * @return
@@ -198,19 +205,19 @@ public class PrintableTree<E extends Comparable> {
      * 到下直到最底层，用虚拟子节点填满所有的空节点，
      * 举个例子：
      * 源平衡二叉树长这个样子
-     *          3
-     *          ^
-     *        1   5
-     *       /   /
-     *      0   4
+     * 3
+     * ^
+     * 1   5
+     * /   /
+     * 0   4
      * --------------------------------------------------------------------
      * 拷贝树长这个样子
-     *         3
-     *         ^
-     *       /   \
-     *     1      5
-     *    / \    / \
-     *   0  NIL 4  NIL
+     * 3
+     * ^
+     * /   \
+     * 1      5
+     * / \    / \
+     * 0  NIL 4  NIL
      * ---------------------------------------------------------------------
      * 问：为啥要这么处理一手？
      * 答：其实是因为源二叉树就是一棵普通的二叉树，打印空节点会错位，而拷贝后的可打印
@@ -220,6 +227,7 @@ public class PrintableTree<E extends Comparable> {
      * 据是一个道理
      * 其实方法也很简单，也就是使用了广度优先搜索每层拷贝，将数据，高度这些信息把扒过来
      * 即可，但是平衡因子是暂时没用到，所以这个属性就不用拷贝过来了
+     *
      * @param bTreeRoot
      * @return
      */
@@ -259,6 +267,7 @@ public class PrintableTree<E extends Comparable> {
 
     /**
      * 用虚拟子节点填满为空的节点，同样使用的是广度优先搜索
+     *
      * @param pRoot
      */
     private void fillWithNilNode(PrintableNode pRoot) {
@@ -292,6 +301,7 @@ public class PrintableTree<E extends Comparable> {
 
     /**
      * 获取深度和打印行数的对应关系中打印行数的最大值，也就是总共要打印的行数
+     *
      * @return
      */
     private int getMaxLineNumber4Print() {
@@ -366,6 +376,7 @@ public class PrintableTree<E extends Comparable> {
     /**
      * 根据深度值计算当前深度于上层深度之间的行数差距
      * gap(depth) = width * 1 / 2^(depth)
+     *
      * @param depth
      * @return
      */
@@ -395,6 +406,7 @@ public class PrintableTree<E extends Comparable> {
 
     /**
      * 计算水平偏移百分比
+     *
      * @return
      */
     private double calculateHorizontalOffsetPercent() {
@@ -409,6 +421,7 @@ public class PrintableTree<E extends Comparable> {
 
     /**
      * 计算垂直偏移百分比
+     *
      * @return
      */
     private double calculateVerticalOffsetPercent() {
@@ -417,6 +430,7 @@ public class PrintableTree<E extends Comparable> {
 
     /**
      * 构建打印单元
+     *
      * @param node
      * @return
      */
